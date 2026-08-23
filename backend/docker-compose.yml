@@ -1,0 +1,24 @@
+name: ai-order-assistant
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-order-assistant-db
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: ai_order_app
+      POSTGRES_PASSWORD: ai_order_dev
+      POSTGRES_DB: ai_order_assistant
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_order_app -d ai_order_assistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ai_order_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  ai_order_postgres_data:
+    name: ai_order_assistant_postgres_data
