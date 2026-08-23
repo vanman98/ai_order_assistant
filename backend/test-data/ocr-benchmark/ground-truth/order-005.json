@@ -1,0 +1,17 @@
+{
+  "imageFile": "order-005.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "2 bịch A ba 3kg", "quantity": 2, "unit": "bịch", "productNameGuess": "?", "confidence": "low", "note": "\"A ba\" tên sản phẩm đọc không chắc" },
+    { "rawText": "1 can nước giặt Thái tím", "quantity": 1, "unit": "can", "productNameGuess": "Nước giặt Thái (màu tím)", "confidence": "medium", "note": "" },
+    { "rawText": "1 can nước giặt Thái đen", "quantity": 1, "unit": "can", "productNameGuess": "Nước giặt Thái (màu đen/đậm)", "confidence": "medium", "note": "" },
+    { "rawText": "10 mì vắt", "quantity": 10, "unit": null, "productNameGuess": "Mì vắt (mì gói dạng vắt)", "confidence": "medium", "note": "" },
+    { "rawText": "1 T xúc xích bé khỏe nhỏ", "quantity": 1, "unit": "thùng", "productNameGuess": "Xúc xích Bé Khỏe (nhỏ)", "confidence": "medium", "note": "\"T\" đoán là \"thùng\"" },
+    { "rawText": "1 Hộp pin đồng hồ", "quantity": 1, "unit": "hộp", "productNameGuess": "Pin đồng hồ", "confidence": "high", "note": "" },
+    { "rawText": "5 bịch G7 nhỏ", "quantity": 5, "unit": "bịch", "productNameGuess": "Cà phê G7 (gói nhỏ)", "confidence": "medium", "note": "" },
+    { "rawText": "5 bịch kẹo bạc hà 100v", "quantity": 5, "unit": "bịch", "productNameGuess": "Kẹo bạc hà (100 viên)", "confidence": "medium", "note": "" },
+    { "rawText": "10 kẹo nho đen", "quantity": 10, "unit": null, "productNameGuess": "Kẹo nho đen", "confidence": "medium", "note": "" },
+    { "rawText": "10 kẹo cà phê", "quantity": 10, "unit": null, "productNameGuess": "Kẹo cà phê", "confidence": "medium", "note": "" },
+    { "rawText": "2 bịch phô mai que nhỏ", "quantity": 2, "unit": "bịch", "productNameGuess": "Phô mai que (nhỏ)", "confidence": "low", "note": "\"pé nét\" đọc không chắc, đoán là \"phô mai que\"" }
+  ]
+}

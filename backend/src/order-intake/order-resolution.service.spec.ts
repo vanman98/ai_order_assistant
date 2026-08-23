@@ -11,6 +11,7 @@ describe('OrderResolutionService', () => {
       unit: 'lon',
       normalizedUnit: 'lon',
       price: 13000,
+      isArchived: false,
       createdAt: new Date('2026-08-18T00:00:00Z'),
       updatedAt: new Date('2026-08-18T00:00:00Z'),
     },

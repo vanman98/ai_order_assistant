@@ -6,6 +6,7 @@ import type {
   ResolveOrderDto,
   ResolveOrderItemDto,
 } from './dto/resolve-order.dto';
+import { normalizeQuantityUnit } from './quantity-unit-normalizer';
 
 type MatchStatus = 'matched' | 'review' | 'missing';
 
@@ -68,10 +69,11 @@ export class OrderResolutionService {
   }
 
   private resolveItem(
-    item: ResolveOrderItemDto,
+    rawItem: ResolveOrderItemDto,
     products: Product[],
     productsById: Map<string, Product>,
   ): ResolvedOrderItem {
+    const item = this.applyRuleBasedNormalization(rawItem);
     const selected = item.selectedProductId
       ? productsById.get(item.selectedProductId)
       : undefined;
@@ -115,6 +117,36 @@ export class OrderResolutionService {
         matched && hasValidQuantity
           ? Math.round(item.quantity! * matched.price)
           : null,
+    };
+  }
+
+  /**
+   * Ap dung bo quy tac chuan hoa so luong/don vi viet tat (muc P0
+   * "rule-based normalize") len du lieu Vision da doc, truoc khi doi chieu
+   * danh muc. Khong bia du lieu moi - chi chuan hoa cach viet da co trong anh.
+   */
+  private applyRuleBasedNormalization(
+    item: ResolveOrderItemDto,
+  ): ResolveOrderItemDto {
+    const normalized = normalizeQuantityUnit({
+      quantity: item.quantity,
+      unit: item.unit,
+      rawText: item.rawText,
+    });
+
+    if (!normalized.wasNormalized && !normalized.ambiguousUnit) {
+      return item;
+    }
+
+    return {
+      ...item,
+      quantity: normalized.quantity,
+      unit: normalized.unit,
+      needsReview: normalized.ambiguousUnit ? true : item.needsReview,
+      uncertaintyReason:
+        normalized.ambiguousUnit && !item.uncertaintyReason
+          ? `Đơn vị viết tắt "${item.unit}" không rõ nghĩa, vui lòng xác nhận`
+          : item.uncertaintyReason,
     };
   }
 

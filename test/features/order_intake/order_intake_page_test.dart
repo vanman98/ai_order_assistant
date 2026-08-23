@@ -3,6 +3,10 @@ import 'package:ai_order_assistant/features/order_intake/domain/entities/order_e
 import 'package:ai_order_assistant/features/order_intake/domain/repositories/order_intake_repository.dart';
 import 'package:ai_order_assistant/features/order_intake/presentation/pages/order_intake_page.dart';
 import 'package:ai_order_assistant/features/order_intake/services/order_image_picker.dart';
+import 'package:ai_order_assistant/features/orders/di/orders_providers.dart';
+import 'package:ai_order_assistant/features/orders/domain/entities/order.dart'
+    as orders_domain;
+import 'package:ai_order_assistant/features/orders/domain/repositories/orders_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,6 +82,9 @@ void main() {
           orderIntakeRepositoryProvider.overrideWithValue(
             const _FakeOrderIntakeRepository(_matchedResult),
           ),
+          ordersRepositoryProvider.overrideWithValue(
+            const _FakeOrdersRepository(),
+          ),
         ],
         child: const MaterialApp(
           home: OrderIntakePage(source: OrderImageSource.gallery),
@@ -95,6 +102,33 @@ void main() {
     expect(find.text('HÓA ĐƠN BÁN HÀNG'), findsOneWidget);
     expect(find.text('CHIA SẺ ẢNH'), findsOneWidget);
   });
+}
+
+class _FakeOrdersRepository implements OrdersRepository {
+  const _FakeOrdersRepository();
+
+  @override
+  Future<orders_domain.Order> confirmOrder({
+    required String clientRequestId,
+    required List<orders_domain.ConfirmOrderItemInput> items,
+    String? customerName,
+    String? note,
+  }) async {
+    return orders_domain.Order(
+      id: 'order-1',
+      code: 'HD20260823-ABCDEF',
+      clientRequestId: clientRequestId,
+      customerNameSnapshot: customerName ?? 'Khách lẻ',
+      subtotal: 26000,
+      total: 26000,
+      note: note,
+      createdAt: DateTime(2026, 8, 23, 10),
+      items: const [],
+    );
+  }
+
+  @override
+  Future<List<orders_domain.Order>> getTodayOrders() async => const [];
 }
 
 class _FakeImagePicker implements OrderImagePicker {

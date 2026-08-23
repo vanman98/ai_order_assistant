@@ -1,0 +1,29 @@
+{
+  "imageFile": "order-002.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "5 C Sài Gòn", "quantity": 5, "unit": "cây", "productNameGuess": "Thuốc lá Sài Gòn", "confidence": "medium", "note": "\"C\" đoán là \"cây\" (đơn vị thuốc lá)" },
+    { "rawText": "4 C Ngựa", "quantity": 4, "unit": "cây", "productNameGuess": "Thuốc lá Ngựa", "confidence": "medium", "note": "" },
+    { "rawText": "4 C Mê Lia", "quantity": 4, "unit": "cây", "productNameGuess": "Thuốc lá Mê Lia", "confidence": "low", "note": "" },
+    { "rawText": "2 C Jet Việt", "quantity": 2, "unit": "cây", "productNameGuess": "Thuốc lá Jet Việt", "confidence": "medium", "note": "" },
+    { "rawText": "2 C Khánh Hội Hộp", "quantity": 2, "unit": "cây", "productNameGuess": "Thuốc lá Khánh Hội", "confidence": "low", "note": "" },
+    { "rawText": "5 bịch mè xửng Thiên Hương 30", "quantity": 5, "unit": "bịch", "productNameGuess": "Mè xửng Thiên Hương (loại 30)", "confidence": "medium", "note": "" },
+    { "rawText": "1 Hộp trà Cozy to", "quantity": 1, "unit": "hộp", "productNameGuess": "Trà Cozy (hộp lớn)", "confidence": "high", "note": "" },
+    { "rawText": "1 bịch ô mai Thái", "quantity": 1, "unit": "bịch", "productNameGuess": "Ô mai Thái", "confidence": "high", "note": "" },
+    { "rawText": "2 thẩu tắc xí muội", "quantity": 2, "unit": "thẩu", "productNameGuess": "Tắc xí muội", "confidence": "medium", "note": "" },
+    { "rawText": "3 bịch thạch dừa 1kg", "quantity": 3, "unit": "bịch", "productNameGuess": "Thạch dừa 1kg", "confidence": "medium", "note": "" },
+    { "rawText": "3 Hộp sữa Ngôi Sao 1 lít", "quantity": 3, "unit": "hộp", "productNameGuess": "Sữa Ngôi Sao 1 lít", "confidence": "medium", "note": "" },
+    { "rawText": "20 bịch hạt nêm chay 200g", "quantity": 20, "unit": "bịch", "productNameGuess": "Hạt nêm chay 200g", "confidence": "medium", "note": "" },
+    { "rawText": "20 ông Phật", "quantity": 20, "unit": null, "productNameGuess": "?", "confidence": "low", "note": "Không rõ đây là tên bánh/kẹo hình ông Phật hay tên khác" },
+    { "rawText": "10 bịch bún lát", "quantity": 10, "unit": "bịch", "productNameGuess": "Bún lát", "confidence": "medium", "note": "" },
+    { "rawText": "20 bịch miến Nhật", "quantity": 20, "unit": "bịch", "productNameGuess": "Miến Nhật", "confidence": "medium", "note": "" },
+    { "rawText": "1 Thùng xúc xích nhỏ", "quantity": 1, "unit": "thùng", "productNameGuess": "Xúc xích (nhỏ)", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng xúc xích lớn", "quantity": 1, "unit": "thùng", "productNameGuess": "Xúc xích (lớn)", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng xúc xích lát phô mai", "quantity": 1, "unit": "thùng", "productNameGuess": "Xúc xích phô mai", "confidence": "low", "note": "Chữ giữa \"lát/lý\" đọc không chắc" },
+    { "rawText": "10 bịch kẹo nho", "quantity": 10, "unit": "bịch", "productNameGuess": "Kẹo nho", "confidence": "medium", "note": "" },
+    { "rawText": "10 bịch kẹo bơ", "quantity": 10, "unit": "bịch", "productNameGuess": "Kẹo bơ", "confidence": "medium", "note": "" },
+    { "rawText": "10 bịch kẹo cà phê", "quantity": 10, "unit": "bịch", "productNameGuess": "Kẹo cà phê", "confidence": "medium", "note": "" },
+    { "rawText": "10 bịch kẹo 3 viên", "quantity": 10, "unit": "bịch", "productNameGuess": "Kẹo (gói 3 viên)", "confidence": "medium", "note": "" },
+    { "rawText": "3 bịch kẹo 110v màu dâu", "quantity": 3, "unit": "bịch", "productNameGuess": "Kẹo 110 viên vị dâu", "confidence": "low", "note": "\"mâu dâu\" đoán là \"màu dâu\"/vị dâu" }
+  ]
+}

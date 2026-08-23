@@ -1,0 +1,25 @@
+{
+  "imageFile": "order-004.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "2 Thùng bồ nhỏ ít đường", "quantity": 2, "unit": "thùng", "productNameGuess": "?", "confidence": "low", "note": "Giống mẫu ở order-001, có thể cùng 1 loại nước uống nhóm \"ít đường\"" },
+    { "rawText": "2 bịch xả thái trắng to", "quantity": 2, "unit": "bịch", "productNameGuess": "?", "confidence": "low", "note": "\"xả thái trắng\" chưa rõ là nước xả vải hay sả cắt" },
+    { "rawText": "2 bịch xả Downy hương nắng mai to", "quantity": 2, "unit": "bịch", "productNameGuess": "Nước xả Downy hương nắng mai (to)", "confidence": "high", "note": "" },
+    { "rawText": "2 bịch bột giặt Omo nước to", "quantity": 2, "unit": "bịch", "productNameGuess": "Nước giặt Omo (to)", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng bánh Chocopie PN", "quantity": 1, "unit": "thùng", "productNameGuess": "Bánh Chocopie", "confidence": "high", "note": "\"PN\" chưa rõ nghĩa" },
+    { "rawText": "1 Thùng bánh quế", "quantity": 1, "unit": "thùng", "productNameGuess": "Bánh quế", "confidence": "high", "note": "" },
+    { "rawText": "20 bánh bạc", "quantity": 20, "unit": null, "productNameGuess": "?", "confidence": "low", "note": "\"bánh bạc\" đọc không chắc" },
+    { "rawText": "1 Thùng bánh Oreo giòn", "quantity": 1, "unit": "thùng", "productNameGuess": "Bánh Oreo giòn", "confidence": "high", "note": "" },
+    { "rawText": "5 Hộp bánh Oreo", "quantity": 5, "unit": "hộp", "productNameGuess": "Bánh Oreo", "confidence": "high", "note": "" },
+    { "rawText": "20 kg đường trắng", "quantity": 20, "unit": "kg", "productNameGuess": "Đường trắng", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng mì lẩu Thái", "quantity": 1, "unit": "thùng", "productNameGuess": "Mì lẩu Thái", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng mì Đệ Nhất", "quantity": 1, "unit": "thùng", "productNameGuess": "Mì Đệ Nhất", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng mì trộn cung đình tôm chua cay", "quantity": 1, "unit": "thùng", "productNameGuess": "Mì trộn cung đình tôm chua cay", "confidence": "medium", "note": "" },
+    { "rawText": "1 Thùng bánh bông lan", "quantity": 1, "unit": "thùng", "productNameGuess": "Bánh bông lan", "confidence": "high", "note": "" },
+    { "rawText": "2 Thùng mì Hảo Hảo chua cay", "quantity": 2, "unit": "thùng", "productNameGuess": "Mì Hảo Hảo chua cay", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng phở Đệ Nhất", "quantity": 1, "unit": "thùng", "productNameGuess": "Phở Đệ Nhất", "confidence": "high", "note": "" },
+    { "rawText": "2 bịch dừa nhỏ", "quantity": 2, "unit": "bịch", "productNameGuess": "Dừa (nhỏ)", "confidence": "medium", "note": "" },
+    { "rawText": "2 Chai nước rửa chén Sunlight trắng to", "quantity": 2, "unit": "chai", "productNameGuess": "Nước rửa chén Sunlight trắng (chai to)", "confidence": "high", "note": "" },
+    { "rawText": "1 Chai gội đầu Clear bạc hà mát lạnh to", "quantity": 1, "unit": "chai", "productNameGuess": "Dầu gội Clear bạc hà mát lạnh (chai to)", "confidence": "high", "note": "" }
+  ]
+}

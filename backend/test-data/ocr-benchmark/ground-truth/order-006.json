@@ -1,0 +1,12 @@
+{
+  "imageFile": "order-006.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "1 bịch nước 500ml", "quantity": 1, "unit": "bịch", "productNameGuess": "Nước suối 500ml", "confidence": "medium", "note": "" },
+    { "rawText": "2 lốc mì ông Phật", "quantity": 2, "unit": "lốc", "productNameGuess": "Mì ông Phật", "confidence": "medium", "note": "" },
+    { "rawText": "5 lon cốt dừa nhỏ", "quantity": 5, "unit": "lon", "productNameGuess": "Cốt dừa (lon nhỏ)", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng T.H to ít đường", "quantity": 1, "unit": "thùng", "productNameGuess": "TH true milk (thùng to, ít đường)", "confidence": "medium", "note": "" },
+    { "rawText": "1 nhãn hộp ít đường", "quantity": 1, "unit": "hộp", "productNameGuess": "?", "confidence": "low", "note": "Dòng này đọc không chắc, có thể liên quan tới dòng trên" },
+    { "rawText": "2 kg đậu phộng", "quantity": 2, "unit": "kg", "productNameGuess": "Đậu phộng", "confidence": "high", "note": "" }
+  ]
+}

@@ -11,11 +11,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class InvoicePage extends StatefulWidget {
-  InvoicePage({required this.result, DateTime? createdAt, super.key})
-    : createdAt = createdAt ?? DateTime.now();
+  InvoicePage({
+    required this.result,
+    DateTime? createdAt,
+    this.orderCode,
+    super.key,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   final OrderExtraction result;
   final DateTime createdAt;
+  final String? orderCode;
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();
@@ -94,6 +99,7 @@ class _InvoicePageState extends State<InvoicePage> {
                 child: _InvoiceReceipt(
                   result: widget.result,
                   createdAt: widget.createdAt,
+                  orderCode: widget.orderCode,
                 ),
               ),
             ),
@@ -143,10 +149,15 @@ class _InvoicePageState extends State<InvoicePage> {
 }
 
 class _InvoiceReceipt extends StatelessWidget {
-  const _InvoiceReceipt({required this.result, required this.createdAt});
+  const _InvoiceReceipt({
+    required this.result,
+    required this.createdAt,
+    this.orderCode,
+  });
 
   final OrderExtraction result;
   final DateTime createdAt;
+  final String? orderCode;
 
   @override
   Widget build(BuildContext context) {
@@ -190,18 +201,33 @@ class _InvoiceReceipt extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
-                      child: Text(
-                        'Khách hàng: Khách lẻ',
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Khách hàng: Khách lẻ',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        Text(
+                          _formatDateTime(createdAt),
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    if (orderCode != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Mã: $orderCode',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Color(0xFF5D6963),
+                        ),
                       ),
-                    ),
-                    Text(
-                      _formatDateTime(createdAt),
-                      style: const TextStyle(fontSize: 10),
-                    ),
+                    ],
                   ],
                 ),
               ),

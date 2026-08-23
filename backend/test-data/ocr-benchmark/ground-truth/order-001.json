@@ -1,0 +1,17 @@
+{
+  "imageFile": "order-001.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "1 bô nu vi to ít đường", "quantity": 1, "unit": null, "productNameGuess": "?", "confidence": "low", "note": "Chưa đọc chắc chắn tên sản phẩm, có vẻ cùng nhóm với 2 dòng bên dưới (nước uống, size to, ít đường)" },
+    { "rawText": "1 (chữ bị khoanh/gạch) miêu to ít đường", "quantity": 1, "unit": null, "productNameGuess": "?", "confidence": "low", "note": "Chữ đầu bị khoanh tròn/tẩy, không đọc được rõ" },
+    { "rawText": "1 T.H to ít đường", "quantity": 1, "unit": null, "productNameGuess": "TH (có thể là TH true milk hoặc trà đóng chai chữ T.H)", "confidence": "medium", "note": "" },
+    { "rawText": "Thùng bánh quế", "quantity": null, "unit": "thùng", "productNameGuess": "Bánh quế", "confidence": "medium", "note": "Không thấy số lượng ghi rõ ở đầu dòng này" },
+    { "rawText": "5 lon Hà Lan xanh", "quantity": 5, "unit": "lon", "productNameGuess": "Đậu Hà Lan xanh (đóng lon)", "confidence": "medium", "note": "" },
+    { "rawText": "5 bánh bao", "quantity": 5, "unit": null, "productNameGuess": "Bánh bao", "confidence": "high", "note": "" },
+    { "rawText": "10 bó bún gạo sợi nhỏ", "quantity": 10, "unit": "bó", "productNameGuess": "Bún gạo sợi nhỏ", "confidence": "medium", "note": "" },
+    { "rawText": "5 bịch bột chiên xù", "quantity": 5, "unit": "bịch", "productNameGuess": "Bột chiên xù", "confidence": "medium", "note": "" },
+    { "rawText": "1 bịch kẹo cổ ne", "quantity": 1, "unit": "bịch", "productNameGuess": "?", "confidence": "low", "note": "\"cổ ne\" đọc không chắc, có thể là tên riêng của loại kẹo" },
+    { "rawText": "5 kg bí vàng 5kg", "quantity": 5, "unit": "kg", "productNameGuess": "Bí đỏ/bí vàng", "confidence": "medium", "note": "Dòng ghi lặp \"5kg\" 2 lần, có thể chỉ 1 số lượng" },
+    { "rawText": "2 ném chín sả 2kg", "quantity": 2, "unit": "kg", "productNameGuess": "?", "confidence": "low", "note": "\"ném chín sả\" đọc không chắc" }
+  ]
+}

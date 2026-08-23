@@ -14,10 +14,71 @@ model Product {
   unit           String
   normalizedUnit String
   price          Int
+  isArchived     Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  orderItems OrderItem[]
 
   @@unique([normalizedName, normalizedUnit])
   @@index([name])
   @@map("products")
+}
+
+model Order {
+  id                   String   @id @default(uuid())
+  code                 String   @unique
+  clientRequestId      String   @unique
+  customerNameSnapshot String   @default("Khách lẻ")
+  subtotal             Int
+  total                Int
+  note                 String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  items OrderItem[]
+
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  nameSnapshot      String
+  unitSnapshot      String
+  unitPriceSnapshot Int
+  quantity          Float
+  lineTotal         Int
+  rawText           String?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// Bang backup thu cong tu migration 20260822170000_remove_product_status.
+// Khong duoc quan ly qua Prisma Client (khong co gi trong app doc/ghi bang
+// nay) - khai bao model o day chi de Prisma ngung de xuat DROP TABLE khi
+// chay `migrate dev`, vi bang nay khong nam trong migration history nhu
+// mot model thuc su.
+model LegacyArchivedProduct {
+  id                String   @id
+  name              String
+  normalizedName    String
+  unit              String
+  normalizedUnit    String
+  price             Int
+  originalCreatedAt DateTime
+  originalUpdatedAt DateTime
+  migratedAt        DateTime @default(now())
+
+  @@map("legacy_archived_products")
 }

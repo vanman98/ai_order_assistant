@@ -1,0 +1,24 @@
+{
+  "imageFile": "order-003.jpg",
+  "status": "DRAFT_NEEDS_REVIEW",
+  "items": [
+    { "rawText": "2 Thùng O.Đô", "quantity": 2, "unit": "thùng", "productNameGuess": "?", "confidence": "low", "note": "Có thể là tên viết tắt nhãn nước ngọt, đọc không chắc" },
+    { "rawText": "1 Thùng Coca lon", "quantity": 1, "unit": "thùng", "productNameGuess": "Coca-Cola lon", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng dầu Mezan 1 lít", "quantity": 1, "unit": "thùng", "productNameGuess": "Dầu ăn Mezan 1 lít", "confidence": "high", "note": "" },
+    { "rawText": "1 Thùng mì ly nhỏ", "quantity": 1, "unit": "thùng", "productNameGuess": "Mì ly (nhỏ)", "confidence": "medium", "note": "" },
+    { "rawText": "2 Thùng mì ly to", "quantity": 2, "unit": "thùng", "productNameGuess": "Mì ly (to)", "confidence": "medium", "note": "" },
+    { "rawText": "1 bịch trà Sâm Dứa", "quantity": 1, "unit": "bịch", "productNameGuess": "Trà Sâm Dứa", "confidence": "medium", "note": "" },
+    { "rawText": "1 Thùng mì Hảo Lý", "quantity": 1, "unit": "thùng", "productNameGuess": "?", "confidence": "low", "note": "\"Hảo Lý\" có thể là \"Hảo Hảo\" viết tắt/nhầm, cần xác nhận" },
+    { "rawText": "3 Thùng mì Hảo Hảo chua cay", "quantity": 3, "unit": "thùng", "productNameGuess": "Mì Hảo Hảo chua cay", "confidence": "high", "note": "" },
+    { "rawText": "2 Thùng mì Siu Kay", "quantity": 2, "unit": "thùng", "productNameGuess": "?", "confidence": "low", "note": "Tên nhãn mì đọc không chắc" },
+    { "rawText": "5 kg bí trắng 1kg rẻ", "quantity": 5, "unit": "kg", "productNameGuess": "Bí trắng (loại rẻ)", "confidence": "low", "note": "Dòng có 2 số \"1kg\" và \"5kg\" lẫn nhau, không chắc số lượng thật" },
+    { "rawText": "5 kg bí vàng 5kg", "quantity": 5, "unit": "kg", "productNameGuess": "Bí vàng/bí đỏ", "confidence": "medium", "note": "" },
+    { "rawText": "1 Sách bột chiên giòn", "quantity": 1, "unit": "gói", "productNameGuess": "Bột chiên giòn", "confidence": "medium", "note": "\"Sách\" có thể là \"sấp/gói\"" },
+    { "rawText": "10 kg đường trắng", "quantity": 10, "unit": "kg", "productNameGuess": "Đường trắng", "confidence": "high", "note": "" },
+    { "rawText": "5 Chai sốt mayonnaise nhỏ", "quantity": 5, "unit": "chai", "productNameGuess": "Sốt mayonnaise (chai nhỏ)", "confidence": "high", "note": "" },
+    { "rawText": "1 kg tiêu xay", "quantity": 1, "unit": "kg", "productNameGuess": "Tiêu xay", "confidence": "high", "note": "" },
+    { "rawText": "20 dây sữa tắm Enchanteur 2 loại", "quantity": 20, "unit": "dây", "productNameGuess": "Sữa tắm Enchanteur (dạng gói/dây), 2 loại", "confidence": "medium", "note": "" },
+    { "rawText": "10 dây xả Downy hương nắng mai", "quantity": 10, "unit": "dây", "productNameGuess": "Nước xả Downy hương nắng mai (dạng gói)", "confidence": "high", "note": "" },
+    { "rawText": "10 kem đánh răng P/S 123", "quantity": 10, "unit": null, "productNameGuess": "Kem đánh răng P/S (loại 123)", "confidence": "medium", "note": "" }
+  ]
+}

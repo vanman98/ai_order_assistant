@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:ai_order_assistant/core/errors/error_handler.dart';
 import 'package:ai_order_assistant/core/utils/currency_formatter.dart';
 import 'package:ai_order_assistant/features/order_intake/domain/entities/order_extraction.dart';
 import 'package:ai_order_assistant/features/order_intake/presentation/notifier/order_intake_notifier.dart';
 import 'package:ai_order_assistant/features/order_intake/services/order_image_picker.dart';
+import 'package:ai_order_assistant/features/orders/di/orders_providers.dart';
+import 'package:ai_order_assistant/features/orders/domain/entities/order.dart' as orders_domain;
 import 'package:ai_order_assistant/features/orders/presentation/pages/invoice_page.dart';
 import 'package:ai_order_assistant/features/products/di/product_providers.dart';
 import 'package:ai_order_assistant/features/products/domain/entities/product.dart';
@@ -21,6 +25,9 @@ class OrderIntakePage extends ConsumerStatefulWidget {
 }
 
 class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
+  final String _clientRequestId = _generateClientRequestId();
+  bool _isConfirming = false;
+
   @override
   void initState() {
     super.initState();
@@ -79,10 +86,40 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
     }
   }
 
-  Future<void> _openInvoice(OrderExtraction result) {
-    return Navigator.of(context).push<void>(
-      MaterialPageRoute(builder: (_) => InvoicePage(result: result)),
-    );
+  Future<void> _confirmAndOpenInvoice(OrderExtraction result) async {
+    if (_isConfirming) return;
+    setState(() => _isConfirming = true);
+    try {
+      final items = result.items
+          .map(
+            (item) => orders_domain.ConfirmOrderItemInput(
+              productId: item.selectedProductId!,
+              quantity: item.quantity!,
+              rawText: item.rawText,
+            ),
+          )
+          .toList(growable: false);
+      final order = await ref
+          .read(ordersRepositoryProvider)
+          .confirmOrder(clientRequestId: _clientRequestId, items: items);
+      if (!mounted) return;
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => InvoicePage(
+            result: result,
+            createdAt: order.createdAt,
+            orderCode: order.code,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorHandler.from(error).message)),
+      );
+    } finally {
+      if (mounted) setState(() => _isConfirming = false);
+    }
   }
 
   @override
@@ -152,8 +189,9 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
                     _OrderReviewOverview(
                       result: result,
                       sourceLabel: useCamera ? 'Ảnh chụp' : 'Thư viện',
-                      onConfirm: result.allMatched
-                          ? () => _openInvoice(result)
+                      isConfirming: _isConfirming,
+                      onConfirm: result.allMatched && !_isConfirming
+                          ? () => _confirmAndOpenInvoice(result)
                           : null,
                     ),
                     const SizedBox(height: 16),
@@ -335,11 +373,13 @@ class _OrderReviewOverview extends StatelessWidget {
     required this.result,
     required this.sourceLabel,
     required this.onConfirm,
+    this.isConfirming = false,
   });
 
   final OrderExtraction result;
   final String sourceLabel;
   final VoidCallback? onConfirm;
+  final bool isConfirming;
 
   @override
   Widget build(BuildContext context) {
@@ -383,8 +423,16 @@ class _OrderReviewOverview extends StatelessWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
-            icon: const Icon(Icons.check_circle_outline, size: 19),
-            label: const Text('XÁC NHẬN'),
+            icon: isConfirming
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Icon(Icons.check_circle_outline, size: 19),
+            label: Text(isConfirming ? 'ĐANG LƯU...' : 'XÁC NHẬN'),
           );
 
           if (constraints.maxWidth < 340) {
@@ -1397,4 +1445,14 @@ class _CatalogItemDialogState extends State<_CatalogItemDialog> {
       ),
     );
   }
+}
+
+String _generateClientRequestId() {
+  final random = Random();
+  final timestamp = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+  final randomPart = List.generate(
+    8,
+    (_) => random.nextInt(36).toRadixString(36),
+  ).join();
+  return 'req-$timestamp-$randomPart';
 }

@@ -89,7 +89,7 @@ export class ProductsService {
 
     const requestKeys = new Set<string>();
     for (const entry of entries) {
-      const key = `${entry.normalizedName}\u0000${entry.normalizedUnit}`;
+      const key = `${entry.normalizedName} ${entry.normalizedUnit}`;
       if (requestKeys.has(key)) {
         throw new ConflictException(
           `Sản phẩm bị lặp trong danh sách: ${entry.name} (${entry.unit})`,
@@ -149,12 +149,21 @@ export class ProductsService {
         unit,
         normalizedUnit,
         ...(dto.price != null ? { price: dto.price } : {}),
+        ...(dto.isArchived != null ? { isArchived: dto.isArchived } : {}),
       },
     });
   }
 
   async remove(id: string) {
     await this.requireProduct(id);
+    const soldCount = await this.prisma.orderItem.count({
+      where: { productId: id },
+    });
+    if (soldCount > 0) {
+      throw new ConflictException(
+        'Sản phẩm đã từng được bán, không thể xóa. Hãy ẩn khỏi danh mục (đánh dấu ngừng bán) thay vì xóa.',
+      );
+    }
     return this.prisma.product.delete({ where: { id } });
   }
 
