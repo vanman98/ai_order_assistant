@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:ai_order_assistant/core/errors/error_handler.dart';
 import 'package:ai_order_assistant/core/utils/currency_formatter.dart';
+import 'package:ai_order_assistant/features/customers/di/customer_providers.dart';
+import 'package:ai_order_assistant/features/customers/domain/entities/customer.dart';
+import 'package:ai_order_assistant/features/customers/presentation/widgets/customer_form_dialog.dart';
 import 'package:ai_order_assistant/features/order_intake/domain/entities/order_extraction.dart';
 import 'package:ai_order_assistant/features/order_intake/presentation/notifier/order_intake_notifier.dart';
 import 'package:ai_order_assistant/features/order_intake/services/order_image_picker.dart';
@@ -27,6 +31,8 @@ class OrderIntakePage extends ConsumerStatefulWidget {
 class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
   final String _clientRequestId = _generateClientRequestId();
   bool _isConfirming = false;
+  String? _selectedCustomerId;
+  String? _selectedCustomerName;
 
   @override
   void initState() {
@@ -101,7 +107,11 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
           .toList(growable: false);
       final order = await ref
           .read(ordersRepositoryProvider)
-          .confirmOrder(clientRequestId: _clientRequestId, items: items);
+          .confirmOrder(
+            clientRequestId: _clientRequestId,
+            items: items,
+            customerId: _selectedCustomerId,
+          );
       if (!mounted) return;
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
@@ -109,6 +119,7 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
             result: result,
             createdAt: order.createdAt,
             orderCode: order.code,
+            customerName: order.customerNameSnapshot,
           ),
         ),
       );
@@ -120,6 +131,23 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
     } finally {
       if (mounted) setState(() => _isConfirming = false);
     }
+  }
+
+  Future<void> _pickCustomer() async {
+    final selected = await showDialog<Customer>(
+      context: context,
+      builder: (context) => const _CustomerPickerDialog(),
+    );
+    if (selected == null || !mounted) return;
+    setState(() {
+      if (selected.id == _clearCustomerSelectionId) {
+        _selectedCustomerId = null;
+        _selectedCustomerName = null;
+      } else {
+        _selectedCustomerId = selected.id;
+        _selectedCustomerName = selected.name;
+      }
+    });
   }
 
   @override
@@ -186,6 +214,11 @@ class _OrderIntakePageState extends ConsumerState<OrderIntakePage> {
                     ),
                   ],
                   if (result != null) ...[
+                    _CustomerSelectorRow(
+                      customerName: _selectedCustomerName,
+                      onTap: _pickCustomer,
+                    ),
+                    const SizedBox(height: 10),
                     _OrderReviewOverview(
                       result: result,
                       sourceLabel: useCamera ? 'Ảnh chụp' : 'Thư viện',
@@ -367,6 +400,233 @@ const _reviewOrange = Color(0xFFE88900);
 const _softOrange = Color(0xFFFFF8E9);
 const _missingRed = Color(0xFFD9252A);
 const _softRed = Color(0xFFFFEFF0);
+
+// Sentinel tra ve tu _CustomerPickerDialog khi nguoi dung bam "Khach le" -
+// dung de phan biet voi truong hop dialog bi dong (pop tra ve null) ma
+// khong lam gi ca, giu nguyen lua chon khach hang truoc do.
+const _clearCustomerSelectionId = '__clear_customer_selection__';
+const _clearCustomerSelection = Customer(
+  id: _clearCustomerSelectionId,
+  name: 'Khách lẻ',
+);
+
+class _CustomerSelectorRow extends StatelessWidget {
+  const _CustomerSelectorRow({required this.customerName, required this.onTap});
+
+  final String? customerName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFFD9E0DC)),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.person_outline, color: _brandGreen, size: 22),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Khách hàng',
+                  style: TextStyle(
+                    color: _brandGreen,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  (customerName == null || customerName!.isEmpty)
+                      ? 'Khách lẻ'
+                      : customerName!,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          OutlinedButton(
+            onPressed: onTap,
+            child: Text(customerName == null ? 'CHỌN' : 'ĐỔI'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CustomerPickerDialog extends ConsumerStatefulWidget {
+  const _CustomerPickerDialog();
+
+  @override
+  ConsumerState<_CustomerPickerDialog> createState() =>
+      _CustomerPickerDialogState();
+}
+
+class _CustomerPickerDialogState extends ConsumerState<_CustomerPickerDialog> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+  List<Customer>? _results;
+  bool _isLoading = true;
+  Object? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _search('');
+  }
+
+  Future<void> _search(String query) async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final customers = await ref
+          .read(customerRepositoryProvider)
+          .getCustomers(query: query);
+      if (!mounted) return;
+      setState(() {
+        _results = customers;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error;
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _scheduleSearch(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _search(query),
+    );
+  }
+
+  Future<void> _createCustomer() async {
+    final value = await showDialog<CustomerFormValue>(
+      context: context,
+      builder: (context) => const CustomerFormDialog(),
+    );
+    if (value == null || !mounted) return;
+    try {
+      final customer = await ref
+          .read(customerRepositoryProvider)
+          .createCustomer(name: value.name, phone: value.phone, note: value.note);
+      if (!mounted) return;
+      Navigator.of(context).pop(customer);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(ErrorHandler.from(error).message)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      title: const Text('Chọn khách hàng'),
+      content: SizedBox(
+        width: 420,
+        height: 460,
+        child: Column(
+          children: [
+            TextField(
+              controller: _searchController,
+              autofocus: true,
+              textInputAction: TextInputAction.search,
+              decoration: const InputDecoration(
+                hintText: 'Tìm tên hoặc số điện thoại',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _scheduleSearch,
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _createCustomer,
+                icon: const Icon(Icons.person_add_alt_1_outlined),
+                label: const Text('THÊM KHÁCH HÀNG MỚI'),
+              ),
+            ),
+            const Divider(height: 16),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.person_off_outlined),
+              title: const Text('Khách lẻ (không gắn khách hàng)'),
+              onTap: () =>
+                  Navigator.of(context).pop(_clearCustomerSelection),
+            ),
+            Expanded(child: _buildResults()),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('ĐÓNG'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResults() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(strokeWidth: 3));
+    }
+    if (_error != null) {
+      return Center(
+        child: Text(
+          ErrorHandler.from(_error!).message,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    final results = _results ?? const [];
+    if (results.isEmpty) {
+      return const Center(child: Text('Không tìm thấy khách hàng nào.'));
+    }
+    return ListView.separated(
+      itemCount: results.length,
+      separatorBuilder: (context, index) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final customer = results[index];
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(customer.name),
+          subtitle: (customer.phone == null || customer.phone!.isEmpty)
+              ? null
+              : Text(customer.phone!),
+          onTap: () => Navigator.of(context).pop(customer),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+}
 
 class _OrderReviewOverview extends StatelessWidget {
   const _OrderReviewOverview({

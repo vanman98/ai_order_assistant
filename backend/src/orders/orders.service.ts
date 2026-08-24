@@ -26,12 +26,12 @@ export class OrdersService {
 
     const existingByClientRequestId = await this.prisma.order.findUnique({
       where: { clientRequestId },
-      include: { items: true },
+      include: { items: true, payments: true },
     });
     if (existingByClientRequestId) {
       // Yeu cau lap lai (retry do mat mang, double-tap...) - tra lai don da
       // tao truoc do thay vi tao moi hoac bao loi.
-      return existingByClientRequestId;
+      return this.withPaymentSummary(existingByClientRequestId);
     }
 
     if (dto.items.length === 0) {
@@ -78,20 +78,38 @@ export class OrdersService {
     const id = randomUUID();
     const code = this.generateOrderCode(id);
 
+    // Neu don gan voi 1 Customer co san, lay ten cua khach lam mac dinh
+    // cho customerNameSnapshot (van cho phep dto.customerName ghi de neu
+    // nguoi dung sua tay ten luc xac nhan).
+    let customerNameSnapshot = dto.customerName?.trim();
+    let customerId: string | null = null;
+    if (dto.customerId) {
+      const customer = await this.prisma.customer.findUnique({
+        where: { id: dto.customerId },
+      });
+      if (!customer) {
+        throw new BadRequestException('Không tìm thấy khách hàng đã chọn');
+      }
+      customerId = customer.id;
+      customerNameSnapshot ||= customer.name;
+    }
+
     try {
-      return await this.prisma.order.create({
+      const created = await this.prisma.order.create({
         data: {
           id,
           code,
           clientRequestId,
-          customerNameSnapshot: dto.customerName?.trim() || 'Khách lẻ',
+          customerId,
+          customerNameSnapshot: customerNameSnapshot || 'Khách lẻ',
           subtotal: total,
           total,
           note: dto.note?.trim() || null,
           items: { create: lineItems },
         },
-        include: { items: true },
+        include: { items: true, payments: true },
       });
+      return this.withPaymentSummary(created);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -101,32 +119,50 @@ export class OrdersService {
         // tra lai don do thay vi bao loi (dung ngu nghia idempotent).
         const raced = await this.prisma.order.findUnique({
           where: { clientRequestId },
-          include: { items: true },
+          include: { items: true, payments: true },
         });
-        if (raced) return raced;
+        if (raced) return this.withPaymentSummary(raced);
       }
       throw error;
     }
   }
 
-  findToday() {
+  async findToday() {
     const { start, end } = this.todayRange();
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where: { createdAt: { gte: start, lt: end } },
       orderBy: { createdAt: 'desc' },
-      include: { items: true },
+      include: { items: true, payments: true },
     });
+    return orders.map((order) => this.withPaymentSummary(order));
   }
 
   async findOne(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
-      include: { items: true },
+      include: { items: true, payments: true },
     });
     if (!order) {
       throw new NotFoundException('Không tìm thấy đơn hàng');
     }
-    return order;
+    return this.withPaymentSummary(order);
+  }
+
+  /**
+   * Ghep them paidTotal (tong da thanh toan) va remaining (con no) vao don
+   * hang, tinh truc tiep tu danh sach payments moi lan doc - khong luu san 2
+   * gia tri nay trong DB de tranh lech du lieu neu 1 lan thanh toan bi sua
+   * hoac xoa sau nay.
+   */
+  private withPaymentSummary<
+    T extends { total: number; payments: { amount: number }[] },
+  >(order: T) {
+    const paidTotal = order.payments.reduce((sum, p) => sum + p.amount, 0);
+    return {
+      ...order,
+      paidTotal,
+      remaining: order.total - paidTotal,
+    };
   }
 
   private todayRange() {

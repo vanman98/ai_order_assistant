@@ -25,6 +25,27 @@ model Product {
   @@map("products")
 }
 
+model Customer {
+  id             String   @id @default(uuid())
+  name           String
+  normalizedName String
+  phone          String?
+  note           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Khong chan xoa Customer du da co Order: moi Order da luu san
+  // customerNameSnapshot (ten tai thoi diem ban hang) va customerId dùng
+  // onDelete: SetNull, nen xoa 1 khach hang khong lam mat lich su don hang
+  // cu - chi khong con gan voi 1 ban ghi Customer cu the nua. Khac voi
+  // Product (van con y nghia "ban tiep duoc" nen bi chan xoa neu da ban).
+  orders Order[]
+
+  @@index([name])
+  @@index([phone])
+  @@map("customers")
+}
+
 model Order {
   id                   String   @id @default(uuid())
   code                 String   @unique
@@ -36,10 +57,58 @@ model Order {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  items OrderItem[]
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  items    OrderItem[]
+  payments Payment[]
 
   @@index([createdAt])
+  @@index([customerId])
   @@map("orders")
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  OTHER
+}
+
+model Payment {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  clientRequestId String        @unique
+  amount          Int
+  method          PaymentMethod @default(CASH)
+  note            String?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@map("payments")
+}
+
+// Bang nay duoc tao bang SQL thuan trong migration
+// 20260822170000_remove_product_status de giu lai cac san pham da bi
+// soft-delete (isActive = false) truoc khi bo cot isActive khoi bang
+// products. No CHI la du lieu luu tru lich su, khong duoc doc/ghi boi
+// code ung dung. Phai khai bao o day de Prisma biet bang nay la hop le -
+// neu khong, moi lan `prisma migrate dev` se coi day la drift va de nghi
+// XOA bang (lam mat du lieu luu tru).
+model LegacyArchivedProduct {
+  id                String   @id
+  name              String
+  normalizedName    String
+  unit              String
+  normalizedUnit    String
+  price             Int
+  originalCreatedAt DateTime
+  originalUpdatedAt DateTime
+  migratedAt        DateTime @default(now())
+
+  @@map("legacy_archived_products")
 }
 
 model OrderItem {
@@ -62,23 +131,4 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@map("order_items")
-}
-
-// Bang backup thu cong tu migration 20260822170000_remove_product_status.
-// Khong duoc quan ly qua Prisma Client (khong co gi trong app doc/ghi bang
-// nay) - khai bao model o day chi de Prisma ngung de xuat DROP TABLE khi
-// chay `migrate dev`, vi bang nay khong nam trong migration history nhu
-// mot model thuc su.
-model LegacyArchivedProduct {
-  id                String   @id
-  name              String
-  normalizedName    String
-  unit              String
-  normalizedUnit    String
-  price             Int
-  originalCreatedAt DateTime
-  originalUpdatedAt DateTime
-  migratedAt        DateTime @default(now())
-
-  @@map("legacy_archived_products")
 }

@@ -54,6 +54,12 @@ class HomePage extends StatelessWidget {
               label: 'DANH MỤC HÀNG',
               onPressed: () => context.push(AppRoutes.products),
             ),
+            const SizedBox(height: AppSpacing.md),
+            LargeActionButton(
+              icon: Icons.people_outline,
+              label: 'KHÁCH HÀNG',
+              onPressed: () => context.push(AppRoutes.customers),
+            ),
           ],
         ),
       ),

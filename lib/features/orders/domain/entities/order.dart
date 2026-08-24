@@ -1,3 +1,5 @@
+enum PaymentMethod { cash, bankTransfer, other }
+
 class Order {
   const Order({
     required this.id,
@@ -9,6 +11,9 @@ class Order {
     required this.note,
     required this.createdAt,
     required this.items,
+    required this.paidTotal,
+    required this.remaining,
+    required this.payments,
   });
 
   final String id;
@@ -20,6 +25,11 @@ class Order {
   final String? note;
   final DateTime createdAt;
   final List<OrderItemEntry> items;
+  final int paidTotal;
+  final int remaining;
+  final List<PaymentEntry> payments;
+
+  bool get isFullyPaid => remaining <= 0;
 }
 
 class OrderItemEntry {
@@ -38,6 +48,22 @@ class OrderItemEntry {
   final int unitPriceSnapshot;
   final num quantity;
   final int lineTotal;
+}
+
+class PaymentEntry {
+  const PaymentEntry({
+    required this.id,
+    required this.amount,
+    required this.method,
+    required this.note,
+    required this.createdAt,
+  });
+
+  final String id;
+  final int amount;
+  final PaymentMethod method;
+  final String? note;
+  final DateTime createdAt;
 }
 
 class ConfirmOrderItemInput {

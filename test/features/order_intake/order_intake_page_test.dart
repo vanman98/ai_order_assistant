@@ -111,6 +111,7 @@ class _FakeOrdersRepository implements OrdersRepository {
   Future<orders_domain.Order> confirmOrder({
     required String clientRequestId,
     required List<orders_domain.ConfirmOrderItemInput> items,
+    String? customerId,
     String? customerName,
     String? note,
   }) async {
@@ -124,11 +125,23 @@ class _FakeOrdersRepository implements OrdersRepository {
       note: note,
       createdAt: DateTime(2026, 8, 23, 10),
       items: const [],
+      paidTotal: 0,
+      remaining: 26000,
+      payments: const [],
     );
   }
 
   @override
   Future<List<orders_domain.Order>> getTodayOrders() async => const [];
+
+  @override
+  Future<void> createPayment({
+    required String orderId,
+    required String clientRequestId,
+    required int amount,
+    orders_domain.PaymentMethod method = orders_domain.PaymentMethod.cash,
+    String? note,
+  }) async {}
 }
 
 class _FakeImagePicker implements OrderImagePicker {

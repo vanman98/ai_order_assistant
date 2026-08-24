@@ -1,4 +1,5 @@
 import 'package:ai_order_assistant/app/router/app_routes.dart';
+import 'package:ai_order_assistant/features/customers/presentation/pages/customer_list_page.dart';
 import 'package:ai_order_assistant/features/home/presentation/home_page.dart';
 import 'package:ai_order_assistant/features/order_intake/presentation/pages/order_intake_page.dart';
 import 'package:ai_order_assistant/features/order_intake/services/order_image_picker.dart';
@@ -32,6 +33,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.products,
         builder: (context, state) => const ProductListPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.customers,
+        builder: (context, state) => const CustomerListPage(),
       ),
     ],
   );

@@ -15,12 +15,17 @@ class InvoicePage extends StatefulWidget {
     required this.result,
     DateTime? createdAt,
     this.orderCode,
+    this.customerName,
     super.key,
   }) : createdAt = createdAt ?? DateTime.now();
 
   final OrderExtraction result;
   final DateTime createdAt;
   final String? orderCode;
+
+  /// Ten khach hang lay tu customerNameSnapshot cua don da tao. De null thi
+  /// hoa don hien 'Khach le' - dung cho truong hop khong gan khach hang nao.
+  final String? customerName;
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();
@@ -31,7 +36,11 @@ class _InvoicePageState extends State<InvoicePage> {
   bool _isExporting = false;
 
   Future<void> _copyInvoice() async {
-    await Clipboard.setData(ClipboardData(text: _invoiceText(widget.result)));
+    await Clipboard.setData(
+      ClipboardData(
+        text: _invoiceText(widget.result, widget.customerName),
+      ),
+    );
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Đã sao chép nội dung hóa đơn.')),
@@ -100,6 +109,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   result: widget.result,
                   createdAt: widget.createdAt,
                   orderCode: widget.orderCode,
+                  customerName: widget.customerName,
                 ),
               ),
             ),
@@ -153,11 +163,13 @@ class _InvoiceReceipt extends StatelessWidget {
     required this.result,
     required this.createdAt,
     this.orderCode,
+    this.customerName,
   });
 
   final OrderExtraction result;
   final DateTime createdAt;
   final String? orderCode;
+  final String? customerName;
 
   @override
   Widget build(BuildContext context) {
@@ -206,10 +218,12 @@ class _InvoiceReceipt extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Khách hàng: Khách lẻ',
-                            style: TextStyle(fontWeight: FontWeight.w700),
+                            'Khách hàng: ${_displayCustomerName(customerName)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         Text(
@@ -389,8 +403,16 @@ class _InvoiceCell extends StatelessWidget {
   }
 }
 
-String _invoiceText(OrderExtraction result) {
-  final lines = <String>['HÓA ĐƠN BÁN HÀNG'];
+String _displayCustomerName(String? customerName) {
+  final trimmed = customerName?.trim();
+  return (trimmed == null || trimmed.isEmpty) ? 'Khách lẻ' : trimmed;
+}
+
+String _invoiceText(OrderExtraction result, String? customerName) {
+  final lines = <String>[
+    'HÓA ĐƠN BÁN HÀNG',
+    'Khách hàng: ${_displayCustomerName(customerName)}',
+  ];
   for (var index = 0; index < result.items.length; index++) {
     final item = result.items[index];
     lines.add(

@@ -10,6 +10,7 @@ class OrdersRemoteDataSource {
   Future<OrderModel> confirmOrder({
     required String clientRequestId,
     required List<ConfirmOrderItemInput> items,
+    String? customerId,
     String? customerName,
     String? note,
   }) {
@@ -26,6 +27,7 @@ class OrdersRemoteDataSource {
               },
             )
             .toList(growable: false),
+        'customerId': ?customerId,
         'customerName': ?customerName,
         'note': ?note,
       },
@@ -43,6 +45,25 @@ class OrdersRemoteDataSource {
                 OrderModel.fromJson(Map<String, dynamic>.from(item as Map)),
           )
           .toList(growable: false),
+    );
+  }
+
+  Future<void> createPayment({
+    required String orderId,
+    required String clientRequestId,
+    required int amount,
+    required String method,
+    String? note,
+  }) {
+    return _client.post<void>(
+      '/orders/$orderId/payments',
+      data: {
+        'clientRequestId': clientRequestId,
+        'amount': amount,
+        'method': method,
+        'note': ?note,
+      },
+      decode: (_) {},
     );
   }
 }

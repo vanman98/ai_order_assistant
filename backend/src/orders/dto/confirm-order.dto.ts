@@ -48,6 +48,11 @@ export class ConfirmOrderDto {
 
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
+  customerId?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(500)
   note?: string;
 }
