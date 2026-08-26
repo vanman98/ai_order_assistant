@@ -60,6 +60,12 @@ class HomePage extends StatelessWidget {
               label: 'KHÁCH HÀNG',
               onPressed: () => context.push(AppRoutes.customers),
             ),
+            const SizedBox(height: AppSpacing.md),
+            LargeActionButton(
+              icon: Icons.account_balance_wallet_outlined,
+              label: 'CÔNG NỢ',
+              onPressed: () => context.push(AppRoutes.debts),
+            ),
           ],
         ),
       ),

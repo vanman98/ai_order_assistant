@@ -21,6 +21,13 @@ export class CustomersController {
     return this.customersService.findAll(query);
   }
 
+  // Phai khai bao truoc bat ky route GET ':id' nao neu sau nay them vao,
+  // khong thi 'debts' se bi hieu nham la mot id khach hang.
+  @Get('debts')
+  findDebts() {
+    return this.customersService.findDebts();
+  }
+
   @Post()
   create(@Body() dto: CreateCustomerDto) {
     return this.customersService.create(dto);

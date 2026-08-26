@@ -5,4 +5,5 @@ abstract final class AppRoutes {
   static const todayOrders = '/orders/today';
   static const products = '/products';
   static const customers = '/customers';
+  static const debts = '/debts';
 }

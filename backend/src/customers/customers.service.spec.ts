@@ -100,6 +100,138 @@ describe('CustomersService', () => {
     ).rejects.toMatchObject({ status: 404 });
   });
 
+  it('groups debt by customer, excluding fully paid orders and sorting by largest debt', async () => {
+    const orders = [
+      {
+        id: 'order-1',
+        code: 'HD-1',
+        total: 100000,
+        createdAt: new Date('2026-08-24T10:00:00Z'),
+        customerId: 'customer-1',
+        customerNameSnapshot: 'Chị Lan',
+        customer: { id: 'customer-1', name: 'Chị Lan', phone: '0901' },
+        payments: [{ amount: 30000 }],
+      },
+      {
+        id: 'order-2',
+        code: 'HD-2',
+        total: 50000,
+        createdAt: new Date('2026-08-23T10:00:00Z'),
+        customerId: 'customer-1',
+        customerNameSnapshot: 'Chị Lan',
+        customer: { id: 'customer-1', name: 'Chị Lan', phone: '0901' },
+        payments: [],
+      },
+      {
+        // Da tra du -> khong duoc tinh vao cong no.
+        id: 'order-3',
+        code: 'HD-3',
+        total: 20000,
+        createdAt: new Date('2026-08-22T10:00:00Z'),
+        customerId: 'customer-2',
+        customerNameSnapshot: 'Anh Nam',
+        customer: { id: 'customer-2', name: 'Anh Nam', phone: null },
+        payments: [{ amount: 20000 }],
+      },
+      {
+        id: 'order-4',
+        code: 'HD-4',
+        total: 15000,
+        createdAt: new Date('2026-08-21T10:00:00Z'),
+        customerId: 'customer-2',
+        customerNameSnapshot: 'Anh Nam',
+        customer: { id: 'customer-2', name: 'Anh Nam', phone: null },
+        payments: [],
+      },
+    ];
+    const prisma = {
+      customer: {},
+      order: { findMany: jest.fn().mockResolvedValue(orders) },
+    } as unknown as PrismaService;
+    const service = new CustomersService(prisma);
+
+    const debts = await service.findDebts();
+
+    expect(debts).toHaveLength(2);
+    // Chi Lan no 70000 + 50000 = 120000, dung dau vi no nhieu nhat.
+    expect(debts[0]).toMatchObject({
+      customerId: 'customer-1',
+      customerName: 'Chị Lan',
+      phone: '0901',
+      totalDebt: 120000,
+      unpaidOrderCount: 2,
+    });
+    expect(debts[0].orders).toHaveLength(2);
+    expect(debts[0].orders[0]).toMatchObject({
+      code: 'HD-1',
+      total: 100000,
+      paidTotal: 30000,
+      remaining: 70000,
+    });
+    // Anh Nam chi con don HD-4 chua tra; HD-3 da tra du nen bi loai.
+    expect(debts[1]).toMatchObject({
+      customerId: 'customer-2',
+      totalDebt: 15000,
+      unpaidOrderCount: 1,
+    });
+    expect(debts[1].orders.map((order) => order.code)).toEqual(['HD-4']);
+
+    const args = (prisma.order.findMany as jest.Mock).mock.calls[0][0];
+    expect(args.where).toEqual({ customerId: { not: null } });
+  });
+
+  it('falls back to the order name snapshot when the customer record was deleted', async () => {
+    const prisma = {
+      customer: {},
+      order: {
+        findMany: jest.fn().mockResolvedValue([
+          {
+            id: 'order-1',
+            code: 'HD-1',
+            total: 40000,
+            createdAt: new Date('2026-08-24T10:00:00Z'),
+            customerId: 'deleted-customer',
+            customerNameSnapshot: 'Chị Lan',
+            customer: null,
+            payments: [],
+          },
+        ]),
+      },
+    } as unknown as PrismaService;
+    const service = new CustomersService(prisma);
+
+    const debts = await service.findDebts();
+
+    expect(debts[0]).toMatchObject({
+      customerName: 'Chị Lan',
+      phone: null,
+      totalDebt: 40000,
+    });
+  });
+
+  it('treats an overpaid order as no debt rather than negative debt', async () => {
+    const prisma = {
+      customer: {},
+      order: {
+        findMany: jest.fn().mockResolvedValue([
+          {
+            id: 'order-1',
+            code: 'HD-1',
+            total: 30000,
+            createdAt: new Date('2026-08-24T10:00:00Z'),
+            customerId: 'customer-1',
+            customerNameSnapshot: 'Chị Lan',
+            customer: { id: 'customer-1', name: 'Chị Lan', phone: null },
+            payments: [{ amount: 50000 }],
+          },
+        ]),
+      },
+    } as unknown as PrismaService;
+    const service = new CustomersService(prisma);
+
+    await expect(service.findDebts()).resolves.toEqual([]);
+  });
+
   it('deletes a customer without checking for existing orders (SetNull keeps order history intact)', async () => {
     const existing = { id: 'customer-1', name: 'Chị Lan' };
     const prisma = {
